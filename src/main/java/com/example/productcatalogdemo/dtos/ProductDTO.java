@@ -1,15 +1,16 @@
-package com.example.productcatalogdemo.models;
+package com.example.productcatalogdemo.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class Product extends BaseModel{
+public class ProductDTO {
+
+    private long id;
     private String name;
     private double price;
     private String description;
     private String imageUrl;
-    private Category category;
-    private String isPrimeProduct;
+    private CategoryDTO category;
 }
