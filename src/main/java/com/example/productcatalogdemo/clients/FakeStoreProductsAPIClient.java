@@ -59,17 +59,27 @@ public class FakeStoreProductsAPIClient {
         return null;
     }
 
-    private <T> ResponseEntity<T> putForEntity(String url, @Nullable Object request, Class<T> responseType, Object... uriVariables) throws RestClientException {
-        RequestCallback requestCallback = restTemplate.httpEntityCallback(request, responseType);
-        ResponseExtractor<ResponseEntity<T>> responseExtractor = restTemplate.responseEntityExtractor(responseType);
-        return restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor, uriVariables);
-    }
-
     public Product updateProduct(long productId, Product product) {
         ResponseEntity<FakeStoreProductDTO> putResponse = putForEntity(fakeStoreProductsAPIUri+productPathVariable, FakeStoreProductUtils.mapToFakeStoreProductDTO(product), FakeStoreProductDTO.class, productId);
         if (putResponse.getStatusCode().equals(HttpStatus.OK) && putResponse.getBody() != null) {
             return FakeStoreProductUtils.mapper(putResponse.getBody());
         }
         return null;
+    }
+
+    public List<Product> fetchAllProductsByCategory(String category) {
+        String categoryPathVariable = "category/{category}";
+        ResponseEntity<FakeStoreProductDTO[]> responseEntity = restTemplate.getForEntity(fakeStoreProductsAPIUri+categoryPathVariable, FakeStoreProductDTO[].class, category);
+        if (responseEntity.getStatusCode().equals(HttpStatus.OK) && responseEntity.getBody() != null) {
+            FakeStoreProductDTO[] response = responseEntity.getBody();
+            return Arrays.stream(response).map(FakeStoreProductUtils::mapper).collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
+    private <T> ResponseEntity<T> putForEntity(String url, @Nullable Object request, Class<T> responseType, Object... uriVariables) throws RestClientException {
+        RequestCallback requestCallback = restTemplate.httpEntityCallback(request, responseType);
+        ResponseExtractor<ResponseEntity<T>> responseExtractor = restTemplate.responseEntityExtractor(responseType);
+        return restTemplate.execute(url, HttpMethod.PUT, requestCallback, responseExtractor, uriVariables);
     }
 }

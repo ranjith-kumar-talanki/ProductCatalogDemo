@@ -27,7 +27,17 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<ProductDTO>> getProducts() {
-        List<Product> products = productService.fetchAll();
+        List<Product> products = productService.fetchAllProducts();
+        if(!products.isEmpty()){
+            return new ResponseEntity<>(products.stream().map(this::mapToDTO).collect(Collectors.toList()), HttpStatus.OK) ;
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("category/{categoryName}")
+    public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable String categoryName) {
+
+        List<Product> products = productService.fetchAllProductsByCategory(categoryName);
         if(!products.isEmpty()){
             return new ResponseEntity<>(products.stream().map(this::mapToDTO).collect(Collectors.toList()), HttpStatus.OK) ;
         }

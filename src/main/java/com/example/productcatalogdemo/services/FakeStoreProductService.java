@@ -17,7 +17,7 @@ public class FakeStoreProductService implements ProductService {
         this.fakeStoreProductsAPIClient = fakeStoreProductsAPIClient;
     }
 
-    public List<Product> fetchAll() {
+    public List<Product> fetchAllProducts() {
         return fakeStoreProductsAPIClient.fetchAllProducts();
     }
 
@@ -33,5 +33,8 @@ public class FakeStoreProductService implements ProductService {
         return fakeStoreProductsAPIClient.updateProduct(productId, product);
     }
 
-
+    @Override
+    public List<Product> fetchAllProductsByCategory(String category) {
+        return fakeStoreProductsAPIClient.fetchAllProductsByCategory(category);
+    }
 }
