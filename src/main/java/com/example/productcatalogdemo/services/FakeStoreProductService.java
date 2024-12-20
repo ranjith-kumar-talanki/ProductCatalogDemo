@@ -1,6 +1,7 @@
 package com.example.productcatalogdemo.services;
 
 import com.example.productcatalogdemo.clients.FakeStoreProductsAPIClient;
+import com.example.productcatalogdemo.models.Category;
 import com.example.productcatalogdemo.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,11 @@ public class FakeStoreProductService implements ProductService {
 
     public Product updateProduct(long productId, Product product) {
         return fakeStoreProductsAPIClient.updateProduct(productId, product);
+    }
+
+    @Override
+    public List<Category> getAllCategories() {
+        return fakeStoreProductsAPIClient.getAllCategories();
     }
 
     @Override

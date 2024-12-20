@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/products")
@@ -29,7 +28,7 @@ public class ProductController {
     public ResponseEntity<List<ProductDTO>> getProducts() {
         List<Product> products = productService.fetchAllProducts();
         if(!products.isEmpty()){
-            return new ResponseEntity<>(products.stream().map(this::mapToDTO).collect(Collectors.toList()), HttpStatus.OK) ;
+            return new ResponseEntity<>(products.stream().map(this::mapToDTO).toList(), HttpStatus.OK) ;
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -39,7 +38,7 @@ public class ProductController {
 
         List<Product> products = productService.fetchAllProductsByCategory(categoryName);
         if(!products.isEmpty()){
-            return new ResponseEntity<>(products.stream().map(this::mapToDTO).collect(Collectors.toList()), HttpStatus.OK) ;
+            return new ResponseEntity<>(products.stream().map(this::mapToDTO).toList(), HttpStatus.OK) ;
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

@@ -1,5 +1,6 @@
 package com.example.productcatalogdemo.services;
 
+import com.example.productcatalogdemo.models.Category;
 import com.example.productcatalogdemo.models.Product;
 import java.util.List;
 
@@ -10,4 +11,5 @@ public interface ProductService {
     Product createProduct(Product product);
     Product updateProduct(long productId, Product product);
     List<Product> fetchAllProductsByCategory(String category);
+    List<Category> getAllCategories();
 }

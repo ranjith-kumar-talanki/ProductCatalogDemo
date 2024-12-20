@@ -1,6 +1,7 @@
 package com.example.productcatalogdemo.clients;
 
 import com.example.productcatalogdemo.dtos.FakeStoreProductDTO;
+import com.example.productcatalogdemo.models.Category;
 import com.example.productcatalogdemo.models.Product;
 import com.example.productcatalogdemo.utils.FakeStoreProductUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,9 @@ public class FakeStoreProductsAPIClient {
 
 
     private final RestTemplate restTemplate;
-    private final String fakeStoreProductsAPIUri = "https://fakestoreapi.com/products/";
+    private final String fakeStoreProductsAPIURI = "https://fakestoreapi.com/products/";
     private final String productPathVariable = "{id}";
+    private final String allCategoriesPathURL = "categories";
 
     @Autowired
     private FakeStoreProductsAPIClient(RestTemplateBuilder restTemplateBuilder) {
@@ -35,7 +37,7 @@ public class FakeStoreProductsAPIClient {
     }
 
     public List<Product> fetchAllProducts() {
-        ResponseEntity<FakeStoreProductDTO[]> responseEntity = restTemplate.getForEntity(fakeStoreProductsAPIUri, FakeStoreProductDTO[].class);
+        ResponseEntity<FakeStoreProductDTO[]> responseEntity = restTemplate.getForEntity(fakeStoreProductsAPIURI, FakeStoreProductDTO[].class);
         if (responseEntity.getStatusCode().equals(HttpStatus.OK) && responseEntity.getBody() != null) {
             FakeStoreProductDTO[] response = responseEntity.getBody();
             return Arrays.stream(response).map(FakeStoreProductUtils::mapper).collect(Collectors.toList());
@@ -44,7 +46,7 @@ public class FakeStoreProductsAPIClient {
     }
 
     public Product getProductById(Long id) {
-        ResponseEntity<FakeStoreProductDTO> responseEntity = restTemplate.getForEntity(fakeStoreProductsAPIUri+productPathVariable, FakeStoreProductDTO.class, id);
+        ResponseEntity<FakeStoreProductDTO> responseEntity = restTemplate.getForEntity(fakeStoreProductsAPIURI+productPathVariable, FakeStoreProductDTO.class, id);
         if (responseEntity.getStatusCode().equals(HttpStatus.OK) && responseEntity.getBody() != null) {
             return FakeStoreProductUtils.mapper(responseEntity.getBody());
         }
@@ -52,7 +54,7 @@ public class FakeStoreProductsAPIClient {
     }
 
     public Product createProduct(Product product) {
-        ResponseEntity<FakeStoreProductDTO> postResponseEntity = restTemplate.postForEntity(fakeStoreProductsAPIUri, FakeStoreProductUtils.mapToFakeStoreProductDTO(product), FakeStoreProductDTO.class);
+        ResponseEntity<FakeStoreProductDTO> postResponseEntity = restTemplate.postForEntity(fakeStoreProductsAPIURI, FakeStoreProductUtils.mapToFakeStoreProductDTO(product), FakeStoreProductDTO.class);
         if (postResponseEntity.getStatusCode().equals(HttpStatus.OK) && postResponseEntity.getBody() != null) {
             return FakeStoreProductUtils.mapper(postResponseEntity.getBody());
         }
@@ -60,7 +62,7 @@ public class FakeStoreProductsAPIClient {
     }
 
     public Product updateProduct(long productId, Product product) {
-        ResponseEntity<FakeStoreProductDTO> putResponse = putForEntity(fakeStoreProductsAPIUri+productPathVariable, FakeStoreProductUtils.mapToFakeStoreProductDTO(product), FakeStoreProductDTO.class, productId);
+        ResponseEntity<FakeStoreProductDTO> putResponse = putForEntity(fakeStoreProductsAPIURI+productPathVariable, FakeStoreProductUtils.mapToFakeStoreProductDTO(product), FakeStoreProductDTO.class, productId);
         if (putResponse.getStatusCode().equals(HttpStatus.OK) && putResponse.getBody() != null) {
             return FakeStoreProductUtils.mapper(putResponse.getBody());
         }
@@ -69,10 +71,23 @@ public class FakeStoreProductsAPIClient {
 
     public List<Product> fetchAllProductsByCategory(String category) {
         String categoryPathVariable = "category/{category}";
-        ResponseEntity<FakeStoreProductDTO[]> responseEntity = restTemplate.getForEntity(fakeStoreProductsAPIUri+categoryPathVariable, FakeStoreProductDTO[].class, category);
+        ResponseEntity<FakeStoreProductDTO[]> responseEntity = restTemplate.getForEntity(fakeStoreProductsAPIURI+categoryPathVariable, FakeStoreProductDTO[].class, category);
         if (responseEntity.getStatusCode().equals(HttpStatus.OK) && responseEntity.getBody() != null) {
             FakeStoreProductDTO[] response = responseEntity.getBody();
             return Arrays.stream(response).map(FakeStoreProductUtils::mapper).collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
+    public List<Category> getAllCategories() {
+        ResponseEntity<String[]> responseEntity = restTemplate.getForEntity(fakeStoreProductsAPIURI + allCategoriesPathURL, String[].class);
+        if (responseEntity.getStatusCode().equals(HttpStatus.OK) && responseEntity.getBody() != null) {
+            String[] response = responseEntity.getBody();
+            return Arrays.stream(response).map(categoryName -> {
+                Category category = new Category();
+                category.setName(categoryName);
+                return category;
+            }).collect(Collectors.toList());
         }
         return new ArrayList<>();
     }
