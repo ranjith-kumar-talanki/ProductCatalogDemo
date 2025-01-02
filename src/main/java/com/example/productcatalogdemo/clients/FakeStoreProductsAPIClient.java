@@ -28,7 +28,6 @@ public class FakeStoreProductsAPIClient {
     private final RestTemplate restTemplate;
     private final String fakeStoreProductsAPIURI = "https://fakestoreapi.com/products/";
     private final String productPathVariable = "{id}";
-    private final String allCategoriesPathURL = "categories";
 
     @Autowired
     private FakeStoreProductsAPIClient(RestTemplateBuilder restTemplateBuilder) {
@@ -80,6 +79,7 @@ public class FakeStoreProductsAPIClient {
     }
 
     public List<Category> getAllCategories() {
+        String allCategoriesPathURL = "categories";
         ResponseEntity<String[]> responseEntity = restTemplate.getForEntity(fakeStoreProductsAPIURI + allCategoriesPathURL, String[].class);
         if (responseEntity.getStatusCode().equals(HttpStatus.OK) && responseEntity.getBody() != null) {
             String[] response = responseEntity.getBody();
