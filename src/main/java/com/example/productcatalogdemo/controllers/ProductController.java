@@ -2,7 +2,6 @@ package com.example.productcatalogdemo.controllers;
 
 import com.example.productcatalogdemo.dtos.CategoryDTO;
 import com.example.productcatalogdemo.dtos.ProductDTO;
-import com.example.productcatalogdemo.models.Category;
 import com.example.productcatalogdemo.models.Product;
 import com.example.productcatalogdemo.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +32,10 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("category/{categoryName}")
-    public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable String categoryName) {
+    @GetMapping("category/{categoryId}")
+    public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable Long categoryId) {
 
-        List<Product> products = productService.fetchAllProductsByCategory(categoryName);
+        List<Product> products = productService.fetchAllProductsByCategory(categoryId);
         if(!products.isEmpty()){
             return new ResponseEntity<>(products.stream().map(this::mapToDTO).toList(), HttpStatus.OK) ;
         }
@@ -58,7 +57,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO newProduct) {
 
-        Product createdProduct = productService.createProduct(mapToProduct(newProduct));
+        Product createdProduct = productService.createProduct(newProduct);
         if (createdProduct != null) {
             return new ResponseEntity<>(mapToDTO(createdProduct), HttpStatus.OK);
         }
@@ -70,7 +69,7 @@ public class ProductController {
         if(id == null || id <= 0){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        Product updatedProduct = productService.updateProduct(id, mapToProduct(updateProduct));
+        Product updatedProduct = productService.updateProduct(id, updateProduct);
         if (updatedProduct != null) {
             return new ResponseEntity<>(mapToDTO(updatedProduct), HttpStatus.OK);
         }
@@ -79,7 +78,7 @@ public class ProductController {
 
     private ProductDTO mapToDTO(Product product){
         ProductDTO dto = new ProductDTO();
-        dto.setId(product.getId());
+        dto.setProductId(product.getProductId());
         dto.setName(product.getName());
         dto.setPrice(product.getPrice());
         dto.setDescription(product.getDescription());
@@ -91,17 +90,4 @@ public class ProductController {
 
         return dto;
     }
-
-    private Product mapToProduct(ProductDTO productDTO){
-        Product product = new Product();
-        product.setName(productDTO.getName());
-        product.setPrice(productDTO.getPrice());
-        product.setDescription(productDTO.getDescription());
-        product.setImageUrl(productDTO.getImageUrl());
-        Category category = new Category();
-        category.setName(productDTO.getCategory().getName());
-        product.setCategory(category);
-        return product;
-    }
-
 }
