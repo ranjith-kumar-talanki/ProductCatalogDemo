@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 public interface CategoryService {
 
     List<Category> getAllCategories();
+    List<Category> fetchAllActiveCategories();
     Category getCategoryById(Long categoryId) throws NoSuchElementException;
     Category createCategory(CategoryDTO category);
     Category updateCategory(Long categoryId,CategoryDTO category) throws NoSuchElementException;

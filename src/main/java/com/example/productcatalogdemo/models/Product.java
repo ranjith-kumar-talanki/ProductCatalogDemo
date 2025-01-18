@@ -1,15 +1,15 @@
 package com.example.productcatalogdemo.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
 
-@Setter
-@Getter
 @Entity(name = "catentry")
 @DynamicInsert
-public class Product extends BaseModel{
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class Product extends BaseModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

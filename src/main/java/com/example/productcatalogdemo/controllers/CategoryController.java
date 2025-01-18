@@ -26,11 +26,21 @@ public class CategoryController {
     public ResponseEntity<List<CategoryDTO>> getAllCategories() {
         List<Category> categories = categoryService.getAllCategories();
         if (categories != null && !categories.isEmpty()) {
-            List<CategoryDTO> categoriesDTO = categoryService.getAllCategories().stream().map(this::convertToCategoryDTO).toList();
+            List<CategoryDTO> categoriesDTO = categories.stream().map(this::convertToCategoryDTO).toList();
             return new ResponseEntity<>(categoriesDTO, HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("activeCategories")
+    public ResponseEntity<List<CategoryDTO>> getAllActiveCategories() {
+        List<Category> activeCategories = categoryService.fetchAllActiveCategories();
+        if (activeCategories == null || activeCategories.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        List<CategoryDTO> activeCategoriesDTO = activeCategories.stream().map(this::convertToCategoryDTO).toList();
+        return new ResponseEntity<>(activeCategoriesDTO, HttpStatus.OK);
     }
 
     @GetMapping("{categoryId}")
@@ -44,6 +54,18 @@ public class CategoryController {
     public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) {
         Category category = categoryService.createCategory(categoryDTO);
         return new ResponseEntity<>(this.convertToCategoryDTO(category), HttpStatus.OK);
+    }
+
+    @PutMapping("{categoryId}")
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryDTO categoryDTO) {
+        Category category = categoryService.updateCategory(categoryId, categoryDTO);
+        return new ResponseEntity<>(this.convertToCategoryDTO(category), HttpStatus.OK);
+    }
+
+    @DeleteMapping("{categoryId}")
+    public ResponseEntity<CategoryDTO> deleteCategory(@PathVariable Long categoryId) {
+        categoryService.deleteCategory(categoryId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private CategoryDTO convertToCategoryDTO(Category category) {

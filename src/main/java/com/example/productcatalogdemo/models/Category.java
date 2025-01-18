@@ -1,16 +1,17 @@
 package com.example.productcatalogdemo.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.util.List;
 
-@Getter
-@Setter
+
 @Entity(name = "catgroup")
 @DynamicInsert
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class Category extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

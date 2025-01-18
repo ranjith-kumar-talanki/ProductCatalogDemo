@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Service
 @Primary
-public class StoreProductService implements ProductService{
+public class StoreProductService implements ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
@@ -31,14 +31,18 @@ public class StoreProductService implements ProductService{
     }
 
     @Override
-    public Product getProductById(Long id) {
-        Optional<Product> product = productRepository.findById(id);
-        return product.orElse(null);
+    public List<Product> fetchAllActiveProducts() {
+        return productRepository.findAllByMarkForDelete(0);
     }
 
     @Override
-    public Product createProduct(ProductDTO newProduct) {
-        Category productCategory = categoryRepository.findById(newProduct.getCategory().getCategoryId()).orElse(null);
+    public Product getProductById(Long productId) throws NoSuchElementException {
+        return productRepository.findById(productId).orElseThrow(() -> new NoSuchElementException("Product not found with id: " + productId));
+    }
+
+    @Override
+    public Product createProduct(ProductDTO newProduct) throws NoSuchElementException {
+        Category productCategory = categoryRepository.findById(newProduct.getCategory().getCategoryId()).orElseThrow(() -> new NoSuchElementException("Category not found with id: " + newProduct.getCategory().getCategoryId()));
         Product product = new Product();
         product.setName(newProduct.getName());
         product.setPartNumber(newProduct.getPartNumber());
@@ -51,17 +55,27 @@ public class StoreProductService implements ProductService{
     }
 
     @Override
-    public Product updateProduct(Long productId, ProductDTO product) {
-        return null;
+    public Product updateProduct(Long productId, ProductDTO productDTO) throws NoSuchElementException {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new NoSuchElementException("Product not found with id: " + productId));
+        product.setName(productDTO.getName());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setImageUrl(productDTO.getImageUrl());
+        productRepository.save(product);
+        return product;
     }
 
     @Override
     public List<Product> fetchAllProductsByCategory(Long categoryId) {
-        return List.of();
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new NoSuchElementException("Category not found with id: " + categoryId));
+        return productRepository.findAllByCategory(category);
     }
 
     @Override
-    public void deleteProduct(Long productId) {
+    public void deleteProduct(Long productId) throws NoSuchElementException {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new NoSuchElementException("Product not found with id: " + productId));
+        product.setMarkForDelete(1);
+        productRepository.save(product);
 
     }
 

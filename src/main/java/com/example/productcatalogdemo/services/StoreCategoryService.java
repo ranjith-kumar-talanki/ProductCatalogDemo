@@ -27,6 +27,11 @@ public class StoreCategoryService implements CategoryService {
     }
 
     @Override
+    public List<Category> fetchAllActiveCategories() {
+        return categoryRepository.findAllByMarkForDelete(0);
+    }
+
+    @Override
     public Category getCategoryById(Long categoryId) throws NoSuchElementException {
         return categoryRepository.findById(categoryId).orElseThrow(() -> new NoSuchElementException("No Category found with id: " + categoryId));
     }

@@ -29,7 +29,16 @@ public class ProductController {
         if(!products.isEmpty()){
             return new ResponseEntity<>(products.stream().map(this::mapToDTO).toList(), HttpStatus.OK) ;
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("allActiveProducts")
+    public  ResponseEntity<List<ProductDTO>> getActiveProducts() {
+        List<Product> products = productService.fetchAllActiveProducts();
+        if(!products.isEmpty()){
+            return new ResponseEntity<>(products.stream().map(this::mapToDTO).toList(), HttpStatus.OK) ;
+        }
+        return  new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("category/{categoryId}")
@@ -39,7 +48,7 @@ public class ProductController {
         if(!products.isEmpty()){
             return new ResponseEntity<>(products.stream().map(this::mapToDTO).toList(), HttpStatus.OK) ;
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("{productId}")
@@ -76,9 +85,16 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    @DeleteMapping("{productId}")
+    public ResponseEntity<ProductDTO> deleteProduct(@PathVariable Long productId){
+        productService.deleteProduct(productId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     private ProductDTO mapToDTO(Product product){
         ProductDTO dto = new ProductDTO();
         dto.setProductId(product.getProductId());
+        dto.setPartNumber(product.getPartNumber());
         dto.setName(product.getName());
         dto.setPrice(product.getPrice());
         dto.setDescription(product.getDescription());
@@ -86,6 +102,7 @@ public class ProductController {
         CategoryDTO categoryDTO = new CategoryDTO();
         categoryDTO.setName(product.getCategory().getName());
         categoryDTO.setDescription(product.getCategory().getDescription());
+        categoryDTO.setCategoryId(product.getCategory().getCategoryId());
         dto.setCategory(categoryDTO);
 
         return dto;
